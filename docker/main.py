@@ -5,7 +5,7 @@ from os import environ
 from flask import *
 
 app = Flask(__name__)
-cache = redis.Redis(host='redis', port=6379)
+cache = redis.Redis(host='rediscluster.vvetkk.0001.use1.cache.amazonaws.com', port=6379)
 
 Redis_Host = environ.get('redisdb')
 App_Name = environ.get('app')
@@ -29,11 +29,11 @@ def public(name):
 @app.route('/hitme')
 def hitme():
     count = get_hit_count()
-    return 'Hello! You are {}th visiter.\n Servered by {host_name}'.format(count)
+    return 'Hello! You are {}th visiter.\n'.format(count)
 @app.route('/')
 def hello():
     count = get_hit_count()
-    return 'Hello! You are {}th visiter.\n Servered by {host_name}'.format(count)
+    return 'Hello! You are {}th visiter.\n'.format(count)
 @app.route('/env')
 def env():
     host_name = os.environ['HOSTNAME']
