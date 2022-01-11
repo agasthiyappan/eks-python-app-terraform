@@ -1,0 +1,5 @@
+1. Copy terraform code and run terraform init
+2. Check projected cost by executing "infracost breakdown --path ."
+2. terraform plan | then terraform apply
+     enter "yes" to conform and create resources
+     This task may takes about 20-30 min
