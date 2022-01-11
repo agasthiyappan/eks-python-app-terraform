@@ -1,0 +1,63 @@
+{{- if .Values.python_web_srv.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.python_web_srv.name }}
+  labels:
+    {{- include "eks_py_app.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.python_web_srv.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "eks_py_app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "eks_py_app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.python_web_srv.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "eks_py_app.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.python_web_srv.image.repository }}:{{ .Values.python_web_srv.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.python_web_srv.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.python_web_srv.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /public/live
+              port: {{ .Values.python_web_srv.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /public/live
+              port: {{ .Values.python_web_srv.service.port }}
+          resources:
+            {{- toYaml .Values.python_web_srv.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+ {{- end }}

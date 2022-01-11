@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.python_web_srv.name }}
+  labels:
+    {{- include "eks_py_app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.python_web_srv.service.type }}
+  ports:
+    - port: {{ .Values.python_web_srv.service.port }}
+      targetPort: {{ .Values.python_web_srv.service.port }}
+      protocol: TCP
+      nodePort: {{ .Values.python_web_srv.service.nodePort }}
+      name: http
+  selector:
+    {{- include "eks_py_app.selectorLabels" . | nindent 4 }}
