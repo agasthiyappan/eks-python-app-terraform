@@ -1,6 +1,5 @@
 FROM python:3.7-alpine
 WORKDIR /code
-COPY live.py /code/live.py
 ENV FLASK_APP main.py
 ENV FLASK_RUN_HOST 0.0.0.0
 RUN apk add --no-cache gcc musl-dev linux-headers
